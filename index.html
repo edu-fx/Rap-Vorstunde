@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Rap">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<title>Welche Merkmale hat ein Rap?</title>
+<style>
+:root{--bg:#000;--panel:rgba(14,18,26,.94);--panel2:#1a202c;--slate:#37474f;--ink:#fff;--muted:#aab4c3;--line:#323b4d;
+  --yellow:#fbc02d;--pink:#ec5b9f;--blue:#4b5bd6;--purple:#9575cd;--red:#e04a3f;--cyan:#7fd8e8;--green:#3fb950;--orange:#ff9800}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg)}
+body{font-family:"Helvetica Neue",-apple-system,"Avenir Next",Arial,sans-serif;font-size:18px;line-height:1.45;color:var(--ink);overflow-x:hidden;touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3,p{margin:0}
+.thin{font-weight:300;text-transform:uppercase;letter-spacing:.04em}
+.kick{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.muted{color:var(--muted)}
+
+/* Hintergrund: Meer (Start, Lesen, Stichpunkte, Bericht) · Studio (Aufgaben) */
+#stage{position:fixed;inset:0;z-index:0;background:#000}
+.bg{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;background-size:cover;background-position:center}
+.bg:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
+#bg-m{background-image:url(assets/bg_meer.jpg)}#bg-s{background-image:url(assets/bg_studio.jpg)}
+body[data-scene=m] #bg-m,body[data-scene=s] #bg-s{opacity:1}
+#app{position:relative;z-index:1}
+
+/* Rahmen-Look */
+.frame{border:5px solid var(--fc,var(--blue));background:var(--panel);border-radius:3px}
+.titlebox{background:#fff;color:var(--pink);border:5px solid var(--pink);padding:14px 22px;text-align:center;font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:.02em;line-height:1.25}
+.pinkbox{border:5px solid var(--pink);padding:18px 22px;text-align:center;background:var(--panel)}
+
+/* Kopfzeile */
+#topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:9px 16px;background:#000;border-bottom:1px solid #222;font-size:15px;height:56px}
+#topbar.hide{display:none}
+.tb-team{font-weight:800;max-width:20vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;color:var(--pink)}
+.tb-prog{flex:1;display:flex;gap:8px}
+.seg{flex:1;position:relative;height:28px;border:2px solid var(--sc);overflow:hidden}
+.seg i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--sc);transition:width .5s}
+.seg span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;text-shadow:0 0 4px #000}
+.seg.cur{box-shadow:0 0 0 2px #fff}
+.tb-right{display:flex;align-items:center;gap:8px}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;padding:3px 12px;border:2px solid #fff}
+.timer.warn{border-color:var(--orange);color:var(--orange)}.timer.crit{border-color:var(--red);background:var(--red);color:#fff}
+.ib{border:2px solid #555;background:#000;color:#fff;font-weight:700;font-size:15px;padding:5px 14px;min-height:38px;text-transform:uppercase;letter-spacing:.06em}
+.page{max-width:980px;margin:24px auto;padding:0 16px;display:flex;flex-direction:column;gap:18px;animation:rise .4s both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Knöpfe */
+.btn{border:3px solid var(--bc,var(--blue));background:var(--bc,var(--blue));color:#fff;font-weight:800;font-size:17px;padding:10px 24px;min-height:50px;text-transform:uppercase;letter-spacing:.06em}
+.btn.ghost{background:rgba(0,0,0,.6);color:var(--bc,#fff);border-color:var(--bc,#666)}
+.btn.sm{min-height:40px;padding:5px 14px;font-size:14px}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.btn:active{transform:translateY(1px)}
+.actrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-end;margin-top:14px}
+
+/* Figur */
+img.av{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#222;border:3px solid var(--pink);flex:none}
+img.av.big{width:110px;height:110px}
+.mini{width:30px;height:30px;border-radius:50%;object-fit:cover;vertical-align:middle;border:2px solid var(--tc);margin-right:6px}
+
+/* Station */
+.stwrap{display:flex;flex-direction:column;gap:14px;padding:14px 18px;height:calc(100vh - 56px);height:calc(100dvh - 56px)}
+.sthead{display:flex;align-items:center;gap:18px;padding:10px 18px;--fc:var(--slate);background:rgba(55,71,79,.95)}
+.sthead h1{font-size:30px;line-height:1.1}
+.sthead p{font-size:16px;margin-top:3px}
+.sthead .kick{color:var(--cyan)}
+.sthead .grow{flex:1}
+.stgrid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:30px}
+.tpanel,.apanel{min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.tpanel{--fc:var(--pink)}
+.apanel{--fc:var(--blue);padding:14px 16px}
+@media(max-width:900px){.stwrap{height:auto}.stgrid{grid-template-columns:1fr;gap:20px}.tpanel{max-height:52vh}}
+.ptitle{font-size:14px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;color:var(--fc)}
+.thead{display:flex;align-items:center;gap:10px;padding:12px 16px 0}
+.thead img{width:36px;height:36px;border-radius:50%;object-fit:cover}
+.thead b{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--pink)}
+.textbox{padding:12px 16px 16px}
+.vers{display:block;position:relative;padding:0 2px}
+.vers[data-n]:before{content:attr(data-n);position:absolute;left:-26px;top:5px;font:700 12px "Helvetica Neue",sans-serif;opacity:.5;width:20px;text-align:right}
+.rap{background:#000;color:#fff;padding:14px 16px 14px 38px;font-size:17px;line-height:1.5;border:1px solid #333}
+.blk{margin-bottom:12px}
+.wdh{display:block;font-style:italic;color:var(--muted)}
+.blabel{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);font-weight:800;margin:0 0 2px -22px}
+.src{font-size:12px;opacity:.6;margin-top:10px}
+.platz{border:3px dashed var(--orange);color:#ffd38a;padding:6px 10px;margin-bottom:10px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.ytwrap{position:relative;aspect-ratio:16/9;width:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;border:3px solid var(--pink)}
+.ytwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ytwrap.nofile{padding:20px;font-weight:700}
+.vctl{display:flex;justify-content:center;margin:10px 0 14px}
+
+/* Aufgaben */
+.begr{border-left:5px solid var(--cyan);background:var(--panel2);padding:8px 12px;margin-bottom:12px;font-size:16px}
+.begr b{color:var(--cyan);text-transform:uppercase;letter-spacing:.06em}
+.hinweis{border-left:5px solid var(--yellow);background:var(--panel2);padding:8px 12px;margin-bottom:12px;font-size:16px}
+ol.items{list-style:none;margin:0;padding:0}
+.item{--tc:var(--blue);background:var(--panel2);border-left:6px solid var(--tc);padding:12px 14px;margin-bottom:14px}
+.item.tr{--tc:var(--pink)}.item.tt{--tc:var(--cyan)}
+.item.cur{outline:3px solid var(--tc);outline-offset:-1px}
+.item.locked{opacity:.32;pointer-events:none}
+.ihead{display:flex;gap:10px;align-items:baseline}
+.inum{flex:none;font-weight:800;color:var(--tc);font-size:20px;min-width:28px}
+.tag{display:inline-flex;align-items:center;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--tc);margin-bottom:4px}
+.iq{font-weight:700;flex:1}
+.ilinks{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px 38px}
+.ilinks button{border:2px solid var(--line);background:transparent;padding:2px 10px;font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;min-height:32px}
+.ibody{margin:10px 0 0 38px}
+@media(max-width:600px){.ibody,.ilinks,.tip,.istat,.flashi,.inote{margin-left:0!important}}
+.opt{display:block;width:100%;text-align:left;border:2px solid var(--line);background:#0d1118;padding:10px 14px;margin-bottom:8px;font-weight:600;min-height:46px}
+.opt.good{border-color:var(--green);background:rgba(63,185,80,.18)}
+.opt.bad{border-color:var(--red);background:rgba(224,74,63,.15);opacity:.6;pointer-events:none}
+.opt.dim{opacity:.3}
+.srow{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center;padding:8px 10px;border:2px solid var(--line);margin-bottom:8px;background:#0d1118}
+.st{flex:1 1 200px;font-weight:600}
+.sopts{display:flex;gap:6px;flex-wrap:wrap}
+.so{border:2px solid #4a5468;background:transparent;padding:5px 12px;font-weight:800;min-height:40px;text-transform:uppercase;font-size:14px;letter-spacing:.05em}
+.so.sel.t{background:var(--cyan);border-color:var(--cyan);color:#000}.so.sel.n{background:#9aa4b5;border-color:#9aa4b5;color:#000}
+.srow.good{border-color:var(--green)}
+.srow.good .so:not(.sel){opacity:.2}
+.srow.bad{border-color:var(--red);animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.cbox{font-size:18px}
+.cw{border:2px dashed #999;background:transparent;font:inherit;font-weight:700;padding:0 6px;margin:1px 0;min-height:34px;color:inherit}
+.cw.c1{background:var(--orange);border:2px solid var(--orange);color:#000}.cw.c1:before{content:"● "}
+.cw.c2{background:#29b6f6;border:2px solid #29b6f6;color:#000}.cw.c2:before{content:"◆ "}
+.cw.c3{background:#66bb6a;border:2px solid #66bb6a;color:#000}.cw.c3:before{content:"▲ "}
+.cw.bad{border:2px solid var(--red);animation:shake .4s}
+.inote{font-size:15px;color:#ffd38a;border-left:4px solid var(--orange);padding:4px 10px;margin:8px 0 0 38px;background:#2a1d0a}
+.chint{font-size:14px;color:var(--muted);margin-top:6px}
+.tip{border-left:5px solid var(--yellow);background:#2a2610;color:#fff3c4;padding:8px 12px;margin:8px 0 0 38px;font-size:16px}
+.tip b{display:block;color:var(--yellow);text-transform:uppercase;font-size:13px;letter-spacing:.1em}
+.ifoot{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
+.istat{margin:6px 0 0 38px;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.08em}
+.istat.ok{color:var(--green)}.istat.sk{color:var(--orange)}
+.flashi{margin:6px 0 0 38px;font-weight:700;color:#ff8a80;font-size:16px}
+
+/* Stichpunkte */
+.merk{border:5px solid var(--purple);padding:12px 14px;margin-top:4px;animation:rise .4s both}
+.merk h3{color:var(--purple);text-transform:uppercase;letter-spacing:.08em;font-size:18px}
+.achtung{border-left:5px solid var(--orange);background:#2a1d0a;padding:8px 12px;margin-top:8px;font-size:15px}
+.mf{margin-top:12px}
+.mf label{display:block;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pink)}
+.mf .leit{font-size:15px;color:var(--muted);font-style:italic}
+.terms{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0;align-items:center;font-size:14px;color:var(--muted)}
+.terms button{border:2px solid var(--purple);background:transparent;padding:2px 10px;font-weight:800;min-height:32px;font-size:14px}
+textarea,input[type=text],input[type=password]{font:inherit;width:100%;border:3px solid #3a4458;padding:10px 14px;background:#fff;color:#111;outline:none;border-radius:0}
+textarea:focus,input:focus{border-color:var(--cyan)}
+.mf textarea{min-height:96px;border-color:var(--pink);margin-top:4px}
+
+/* Overlays */
+.ovl{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.85);display:none;align-items:flex-start;justify-content:center;padding:14px;overflow:auto}
+.ovl.open{display:flex}
+.ovlcard{width:min(860px,100%);--fc:var(--blue)}
+.ovlhead{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 14px;background:var(--slate)}
+.notes .in{padding:12px 16px}
+.notes label{display:block;font-weight:800;margin:10px 0 4px;text-transform:uppercase;font-size:13px;letter-spacing:.1em;color:var(--cyan)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:80;background:#000;border:3px solid var(--cyan);color:#fff;padding:10px 20px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .3s;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+.modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal .pinkbox{max-width:520px}
+.flash{min-height:24px;margin-top:8px;font-weight:700;color:#ff8a80}
+
+/* Bericht als Tabelle */
+.rtable{width:100%;border-collapse:collapse;table-layout:fixed;background:var(--panel)}
+.rtable th,.rtable td{border:3px solid #2c3444;padding:10px 12px;vertical-align:top;text-align:left}
+.rtable thead th{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#000}
+.rtable thead th.hs{background:var(--pink)}.rtable thead th.h0{background:#fff;width:24%}
+.rtable tbody th{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--sc);border-left:8px solid var(--sc)}
+.rtable ul{margin:0;padding-left:18px;font-size:17px}
+.rtable .empty{opacity:.4;font-size:15px}
+.rbig .rtable ul{font-size:22px}
+.rstat{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center;font-size:13px}
+.rs{font-size:12px;font-weight:800;padding:2px 8px;border:2px solid;text-transform:uppercase;letter-spacing:.04em}
+.rs.skip{border-color:var(--orange);color:#000;background:var(--orange)}.rs.no{border-color:#555;color:#888}
+@media(max-width:760px){.rtable thead{display:none}.rtable,.rtable tbody,.rtable tr,.rtable th,.rtable td{display:block;width:100%}}
+.wl{display:grid;grid-template-columns:minmax(150px,auto) 1fr;gap:0;margin:0}
+.wl dt,.wl dd{margin:0;padding:9px 10px;border-bottom:1px solid #2c3444}
+.wl dt{font-weight:800;color:var(--cyan);text-transform:uppercase;letter-spacing:.05em;font-size:15px}
+@media(max-width:600px){.wl{grid-template-columns:1fr}.wl dt{border-bottom:0;padding-bottom:0}}
+.wlink{border-bottom:2px dotted var(--cyan);cursor:pointer;color:inherit}
+.wl dt.hl,.wl dt.hl+dd{background:rgba(127,216,232,.18)}
+.dev{position:fixed;left:6px;bottom:6px;z-index:99;font-size:12px;opacity:.7}
+</style>
+</head>
+<body data-scene="m">
+<div id="stage"><div class="bg" id="bg-m"></div><div class="bg" id="bg-s"></div></div>
+<div id="app">
+  <header id="topbar" class="hide">
+    <div class="tb-team" id="tbTeam"></div>
+    <div class="tb-prog" id="tbProg"></div>
+    <div class="tb-right"><span id="tbTimer" class="timer">10:00</span><button class="ib" id="btnWort">Wortspeicher</button><button class="ib" id="btnTexte">Text</button><button class="ib" id="btnNotes">Notizen</button></div>
+  </header>
+  <main><div id="screen"></div></main>
+</div>
+<div class="ovl" id="ovl"><div class="ovlcard frame" style="--fc:var(--pink)"><div class="ovlhead"><b class="kick">Text</b><button class="ib" id="ovlClose">Schließen ✕</button></div><div id="ovlBody"></div></div></div>
+<div class="ovl" id="ovlN"><div class="ovlcard frame notes" style="--fc:var(--cyan)"><div class="ovlhead"><b class="kick">Eure Notizen</b><button class="ib" id="nClose">Schließen ✕</button></div><div class="in"><p class="muted">Hier könnt ihr aufschreiben, was ihr euch merken wollt.</p><div id="nBody"></div></div></div></div>
+<div class="ovl" id="ovlW"><div class="ovlcard frame" style="--fc:var(--cyan)"><div class="ovlhead"><b class="kick">Wortspeicher</b><button class="ib" id="wClose">Schließen ✕</button></div><div class="in" id="wBody" style="padding:12px 16px"></div></div></div>
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const PAYLOAD={"s": "zQWQV6nf9y426cXam9EwAA==", "i": "B/6ye+Ilwd7xuV+L", "c": "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", "n": 200000};
+const KEY='lp_rap_vorstunde_v1';
+const READ_SEC=210; /* Erste Textbegegnung: „Weiter“ wird nach 3:30 frei, damit der Rap (3:22) ganz durchläuft (wird nirgends angezeigt) */
+const EXTRA_SEC=120; /* einmalige Verlängerung, nur im „Zeit ist um“-Fenster angeboten */
+const TOTAL_SEC=10*60;
+const FRAGE='Welche Merkmale hat ein Rap?';
+const SONG={id:'5d8pEoiJmKo',start:0}; /* offizielles Video, Kanal „Pashanim Nulldreinull“ (3:22) */
+const BCOL={a:'var(--cyan)',b:'var(--red)',c:'var(--purple)'};
+const BNAME={a:'Aufbau',b:'Sprachliche Gestaltung',c:'Vortrag'};
+const IMG='assets/figur_pashanim.jpg';
+let C=null,FLOW=[],S=null;
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const hash=str=>{let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+const shuffle=(arr,seed)=>{const r=rng(seed),a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const L='A-Za-zÄÖÜäöüß';
+const TERMRX=[['Versende','Versenden?'],['Reimschema','Reimschemas?'],['Reim','Reim(?:e|en|wörter|wörtern)?'],['Vers','Vers(?:e|en)?'],['Strophe','Strophen?'],['Refrain','Refrains?'],['Beat','Beats?'],['Lyrisches Ich','[Ll]yrische[sn]? Ich'],['Autor','Autors?'],['Umgangssprache','Umgangssprache'],['Höhere Sprache','[Hh]öhere[rn]? Sprache'],['Vortrag','Vortrags?|Vorträgen?']]
+  .map(([w,p])=>[w,new RegExp('(^|[^'+L+'])('+p+')(?=[^'+L+']|$)','g')]);
+function lk(str){let h=esc(str);const parts=[];TERMRX.forEach(([w,rx])=>{h=h.replace(rx,(m,pre,word)=>{parts.push(`<span class="wlink" data-w="${w}">${word}</span>`);return pre+'\u0000'+(parts.length-1)+'\u0001'})});return h.replace(/\u0000(\d+)\u0001/g,(m,i)=>parts[+i])}
+const fmt=s=>{s=Math.max(0,s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const lastWord=v=>v.replace(/[.,;:!?„“"]+$/,'').split(' ').pop();
+function toast(t,ms=2800){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>e.classList.remove('show'),ms)}
+function setScene(n){if(document.body.dataset.scene!==n)document.body.dataset.scene=n}
+const avatar=big=>`<img class="av ${big?'big':''}" src="${IMG}" alt="Pashanim">`;
+
+/* ═════ Zustand ═════ */
+function freshState(){return {v:1,readStart:null,readPop:false,extra:false,team:'',idx:0,res:{},merk:{},mhelp:{},merkDone:{},notes:{a:'',b:'',c:''},deadline:null,seed:Math.floor(Math.random()*1e9),expressSeen:false}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function loadSaved(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}}
+function clearSaved(){try{localStorage.removeItem(KEY)}catch(e){}}
+
+/* ═════ Entschlüsselung ═════ */
+async function unlock(pw){
+  const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(PAYLOAD.s),iterations:PAYLOAD.n,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b(PAYLOAD.i)},key,b(PAYLOAD.c));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+function showGate(msg){
+  setScene('m');$('#topbar').classList.add('hide');
+  $('#screen').innerHTML=`<div class="page" style="max-width:700px"><div class="titlebox">${esc(FRAGE)}</div>
+  <div class="pinkbox"><p>Der Text ist geschützt. Das Passwort bekommt ihr von Herrn Mader.</p>
+  <div style="margin-top:16px"><input type="password" id="pw" placeholder="Passwort" autocomplete="off" autocapitalize="off" autocorrect="off" style="max-width:280px;text-align:center"></div>
+  <div class="flash" id="gmsg">${msg||''}</div>
+  <div style="margin-top:10px"><button class="btn" id="go" style="--bc:var(--pink)">Entsperren</button></div></div></div>`;
+  const go=async()=>{const pw=$('#pw').value.trim();if(!pw)return;$('#go').disabled=true;$('#gmsg').textContent='';
+    try{C=await unlock(pw);start()}catch(e){$('#go').disabled=false;$('#gmsg').textContent=(window.crypto&&crypto.subtle)?'Das Passwort stimmt nicht. Versucht es noch einmal.':'Dieser Browser kann die Seite nicht öffnen.'}};
+  $('#go').onclick=go;$('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+}
+
+/* ═════ Ablauf ═════ */
+function buildFlow(){
+  FLOW=[{t:'intro'},{t:'lesen'}].concat(C.stations.map(s=>({t:'station',id:s.id,b:s.b}))).concat([{t:'lob'},{t:'bericht'}]);
+  let n=0;C.stations.forEach(st=>st.items.forEach(it=>{n++;it.label=String(n)}));
+}
+const stDef=id=>C.stations.find(s=>s.id===id);
+const R=iid=>S.res[iid]||(S.res[iid]={fails:0,done:false,skipped:false,tipN:0,wrong:[],good:[]});
+const closed=iid=>{const r=S.res[iid];return !!(r&&(r.done||r.skipped))};
+const itemsOf=st=>st.items.map((it,i)=>Object.assign({iid:st.id+'.'+(i+1)},it));
+const stFails=st=>itemsOf(st).reduce((n,it)=>n+R(it.iid).fails+(R(it.iid).skipped?4:0),0);
+const timeLeft=()=>S.deadline?Math.ceil((S.deadline-Date.now())/1000):TOTAL_SEC;
+const isOk=(x,k)=>Array.isArray(x.a)?x.a.includes(k):k===x.a;
+function go(i){S.idx=i;save();render()}
+function next(){go(Math.min(S.idx+1,FLOW.length-1))}
+const TAG={r:['Rap „Mittelmeer“','tr',IMG],t:['Typisch für Raps?','tt',null]};
+
+/* ═════ Kopfzeile & Timer ═════ */
+function updateTop(){
+  const it=FLOW[S.idx];const show=['lesen','station','lob','bericht'].includes(it.t);
+  $('#topbar').classList.toggle('hide',!show);if(!show)return;
+  $('#tbTeam').textContent=S.team;
+  $('#tbProg').innerHTML=C.stations.map(s=>{let tot=0,done=0;itemsOf(s).forEach(x=>{tot++;if(closed(x.iid))done++});tot++;if(S.merkDone[s.id])done++;
+    return `<div class="seg ${it.id===s.id?'cur':''}" style="--sc:${BCOL[s.b]}"><i style="width:${Math.round(done/tot*100)}%"></i><span>${BNAME[s.b]}</span></div>`}).join('');
+  $('#tbTimer').style.display=(it.t==='station'||it.t==='lesen')?'':'none';tickTimer();
+}
+function tickTimer(){
+  const t=$('#tbTimer');if(!t||!S||!S.deadline||!FLOW.length)return;const left=timeLeft();
+  t.textContent=fmt(left);t.classList.toggle('warn',left<=180&&left>60);t.classList.toggle('crit',left<=60);
+  const it=FLOW[S.idx];
+  if(left<=150&&!S.expressSeen&&it.t==='station'){S.expressSeen=true;save();toast('Noch etwa 2 Minuten – denkt an eure Stichpunkte!',4200)}
+  if(left<=0&&it.t==='station'&&!$('#timeup'))timeUp();
+}
+function timeUp(){
+  const m=document.createElement('div');m.className='modal';m.id='timeup';
+  m.innerHTML=`<div class="pinkbox"><h2 class="thin" style="font-size:32px">Die Zeit ist um</h2><p style="margin-top:10px">Schaut euch jetzt euren Bericht an.</p><div style="margin-top:16px"><div class="actrow" style="justify-content:center"><button class="btn" id="tuGo" style="--bc:var(--pink)">Zum Bericht</button>${S.extra?'':'<button class="btn ghost" id="tuMore" style="--bc:var(--pink)">Noch 2 Minuten</button>'}</div></div></div>`;
+  document.body.appendChild(m);closeOverlays();$('#tuGo').onclick=()=>{m.remove();go(FLOW.length-1)};
+  const more=$('#tuMore');if(more)more.onclick=()=>{S.extra=true;S.deadline=Date.now()+EXTRA_SEC*1000;save();m.remove();tickTimer()};
+}
+
+/* ═════ Render ═════ */
+function render(){pauseVideos();const it=FLOW[S.idx];updateTop();({intro:rIntro,lesen:rLesen,station:rStation,lob:rLob,bericht:rBericht}[it.t])(it);window.scrollTo(0,0)}
+
+function rIntro(){
+  setScene('m');
+  $('#screen').innerHTML=`<div class="page"><div class="titlebox">${esc(FRAGE)}</div>
+  <div class="frame" style="--fc:var(--blue);padding:18px 22px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">${avatar(true)}
+   <p style="flex:1 1 300px">Pashanim ist ein Rapper aus Berlin. Untersucht seinen Rap „Mittelmeer“ in drei Bereichen: <b style="color:var(--cyan)">Aufbau</b>, <b style="color:var(--red)">sprachliche Gestaltung</b> und <b style="color:var(--purple)">Vortrag</b>. Findet heraus, was typisch für Raps ist, und haltet es in Stichpunkten fest.</p></div>
+  <div class="pinkbox"><p style="font-weight:700">Setzt die Kopfhörer auf und macht den Ton an.</p>
+   <label for="team" class="kick" style="display:block;margin-top:16px;color:var(--pink)">Euer Teamname</label>
+   <input type="text" id="team" maxlength="22" placeholder="Teamname" value="${esc(S.team)}" style="max-width:360px;margin:8px auto 0;display:block;text-align:center" autocomplete="off">
+   <div style="margin-top:16px"><button class="btn" id="go" style="--bc:var(--pink)" ${S.team.trim().length<2?'disabled':''}>Los geht’s</button></div></div></div>`;
+  const inp=$('#team');inp.addEventListener('input',()=>{S.team=inp.value.trim();$('#go').disabled=S.team.length<2;save()});
+  $('#go').onclick=()=>{if(!S.deadline)S.deadline=Date.now()+TOTAL_SEC*1000;next()};
+}
+
+/* ═════ Erste Textbegegnung ═════ */
+function rLesen(){
+  setScene('m');if(!S.readStart){S.readStart=Date.now();save()}
+  $('#screen').innerHTML=`<div class="stwrap">
+   <header class="sthead frame"><div class="grow"><div class="kick">Bevor es losgeht</div><h1 class="thin">Den Rap kennenlernen</h1><p>Lernt zuerst den Rap in Ruhe kennen.</p></div>${avatar(false)}</header>
+   <div class="stgrid">
+    <section class="frame tpanel" id="tpanel">${matHTML()}</section>
+    <section class="frame apanel" id="apanel"><div class="ptitle">Aufgabe</div>
+     <ol class="items"><li class="item tr cur"><div class="ihead"><div class="iq"><span class="tag"><img class="mini" src="${IMG}" alt="">Rap „Mittelmeer“</span><br>Schaut euch das Video an und lest dabei mit.</div></div></li></ol>
+     <div class="actrow"><button class="btn" id="readGo" style="--bc:var(--cyan)" disabled>Weiter zu den Aufgaben</button></div></section>
+   </div></div>`;
+  bindMat($('#tpanel'));
+  $('#readGo').onclick=next;
+  readCheck();
+}
+const readOk=()=>S.readStart&&Date.now()-S.readStart>=READ_SEC*1000;
+function readCheck(){const b=$('#readGo');if(b&&readOk())b.disabled=false}
+function tickRead(){
+  if(!S||!FLOW.length||FLOW[S.idx].t!=='lesen'||!readOk())return;
+  readCheck();
+  if(!S.readPop&&!$('#readmod')){S.readPop=true;save();
+    const m=document.createElement('div');m.className='modal';m.id='readmod';
+    m.innerHTML=`<div class="pinkbox" style="--bc:var(--cyan)"><h2 class="thin" style="font-size:30px">Weiter geht’s</h2><p style="margin-top:10px">Ihr könnt jetzt zu den Aufgaben übergehen.</p><div class="actrow" style="justify-content:center;margin-top:16px"><button class="btn" id="rmGo" style="--bc:var(--cyan)">Zu den Aufgaben</button><button class="btn ghost" id="rmStay">Noch weiterlesen</button></div></div>`;
+    document.body.appendChild(m);
+    $('#rmGo').onclick=()=>{m.remove();next()};$('#rmStay').onclick=()=>m.remove();
+  }
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')tickRead()});
+
+/* ═════ Material: Rap ═════ */
+const labelsKnown=()=>closed('S1.1');
+/* Vor Aufgabe 1 heißen die Teile „Teil 1, 2 …“, danach „Refrain“, „1. Strophe“ … */
+function partLabel(i){const T=C.rap.teile,t=T[i];if(!labelsKnown())return 'Teil '+(i+1);
+  if(t.art!=='Strophe')return t.art;const n=T.slice(0,i+1).filter(x=>x.art==='Strophe').length;return T.filter(x=>x.art==='Strophe').length>1?n+'. Strophe':'Strophe'}
+function rapHTML(){
+  return `<div class="rap">${C.rap.teile.map((t,i)=>`<div class="blk"><div class="blabel">${partLabel(i)}</div>${t.wdh!=null?`<span class="wdh">${labelsKnown()?'Der Refrain wird wiederholt.':'Teil '+(t.wdh+1)+' wird wiederholt.'}</span>`:t.verse.map((v,n)=>`<span class="vers" data-n="${n+1}">${esc(v)}</span>`).join('')}</div>`).join('')}
+   <div class="src">${esc(C.rap.quelle)}</div></div>`}
+const ytSrc=auto=>`https://www.youtube-nocookie.com/embed/${SONG.id}?start=${SONG.start}&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1${auto?'&autoplay=1':''}`;
+function videoHTML(){
+  if(location.protocol==='file:')return `<div class="ytwrap nofile">Das Video läuft nur, wenn die App über den Internet-Link (GitHub) geöffnet wird – nicht als Datei vom Computer.</div>`;
+  if(!navigator.onLine)return `<div class="ytwrap nofile">Ohne WLAN kann das Video nicht abgespielt werden. Den Raptext könnt ihr trotzdem lesen.</div>`;
+  return `<div class="ytwrap"><iframe src="${ytSrc(false)}" title="Pashanim – Mittelmeer (Video)" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+  <div class="vctl"><button class="btn sm ghost vrestart" style="--bc:var(--pink)">↺ Von vorne starten</button></div>`}
+function matHTML(){const T=C.rap;
+  return `<div class="thead"><img src="${IMG}" alt=""><b>${esc(T.autor)} – ${esc(T.titel)}</b></div>
+  <div class="textbox">${T.platzhalter?'<div class="platz">Platzhalter-Text – der echte Raptext fehlt noch</div>':''}${videoHTML()}${rapHTML()}</div>`}
+function bindMat(root){root.querySelectorAll('.vrestart').forEach(b=>b.onclick=()=>{const f=root.querySelector('.ytwrap iframe');if(f)f.src=ytSrc(true)})}
+function pauseVideos(root){(root||document).querySelectorAll('.ytwrap iframe[src]').forEach(f=>{try{f.contentWindow.postMessage(JSON.stringify({event:'command',func:'pauseVideo',args:''}),'*')}catch(e){}})}
+
+/* ═════ Station ═════ */
+const tmpSel={};
+const selOf=x=>tmpSel[x.iid]||(tmpSel[x.iid]={});
+function rStation(it){
+  const st=stDef(it.id);
+  $('#screen').innerHTML=`<div class="stwrap">
+   <header class="sthead frame"><div class="grow"><div class="kick">Bereich ${'abc'.indexOf(st.b)+1} von 3</div><h1 class="thin">${esc(st.title)}</h1><p>${lk(st.intro)}</p></div>${avatar(false)}</header>
+   <div class="stgrid">
+    <section class="frame tpanel" id="tpanel">${matHTML()}</section>
+    <section class="frame apanel" id="apanel"><div class="ptitle">Aufgaben</div>
+     ${st.begriffe&&st.begriffe.length?`<div class="begr">${st.begriffe.map(x=>`<div><b class="wlink" data-w="${esc(x.w)}">${esc(x.w)}:</b> ${esc(x.t)}</div>`).join('')}</div>`:''}
+     ${st.hinweis?`<div class="hinweis">${lk(st.hinweis)}</div>`:''}
+     <ol class="items" id="items"></ol><div id="merkbox"></div><div class="actrow" id="act"></div></section>
+   </div></div>`;
+  bindMat($('#tpanel'));
+  $('#items').addEventListener('click',e=>onItemClick(st,e));
+  drawItems(st);
+}
+const colorLines=x=>C.rap.teile[x.teil].verse.slice(x.rng[0],x.rng[1]);
+function colorsBody(x,r){
+  const lines=colorLines(x),exp={};x.groups.forEach((g,gi)=>g.forEach(w=>exp[w]=gi));const sv=selOf(x);
+  const html=lines.map((v,i)=>{const w=lastWord(v),idx=v.lastIndexOf(w);
+    const c=r.done?(exp[w]!==undefined?exp[w]+1:0):r.skipped?0:(sv[i]||0);
+    return `<span class="vers" data-n="${x.rng[0]+i+1}">${esc(v.slice(0,idx))}<button class="cw c${c}" data-i="${i}">${esc(w)}</button>${esc(v.slice(idx+w.length))}</span>`}).join('');
+  return `<div class="cbox rap">${html}</div>${r.done||r.skipped?'':'<div class="chint">Tippt ein Wort mehrmals an, um die Farbe zu wechseln.</div>'}`;
+}
+function drawItems(st){
+  const list=itemsOf(st);const ci=list.findIndex(x=>!closed(x.iid));const cur=ci>=0?list[ci]:null;
+  const cls=o=>o==='Typisch'?'t':'n';
+  $('#items').innerHTML=list.map((x,i)=>{
+    const r=R(x.iid);const state=r.done?'done':r.skipped?'skipped':i===ci?'cur':'locked';
+    const [tagName,tagCls,tagImg]=TAG[x.text];
+    let body='';
+    if(x.type==='mc'){
+      const order=x.short.startsWith('Refrain')?x.opts.map((_,k)=>k):shuffle(x.opts.map((_,k)=>k),S.seed+hash(x.iid));
+      body=order.map(k=>{let c='';if(r.done)c=isOk(x,k)?'good':'dim';else if(r.skipped)c='dim';else if(r.wrong.includes(k))c='bad';return `<button class="opt ${c}" data-k="${k}">${esc(x.opts[k])}</button>`}).join('');
+    }else if(x.type==='sort'){
+      const sv=selOf(x);
+      body=x.rows.map((row,k)=>{const good=r.done||r.good.includes(k);const chosen=good?row.a:(r.skipped?null:sv[k]);
+        return `<div class="srow ${good?'good':''}" data-k="${k}"><div class="st">${lk(row.t)}</div><div class="sopts">${x.options.map(o=>`<button class="so ${cls(o)} ${chosen===o?'sel':''}" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`}).join('');
+    }else body=colorsBody(x,r);
+    const tips=(x.tips||[]).slice(0,r.tipN).map((t,k)=>`<div class="tip"><b>Tipp ${k+1}</b>${lk(t)}</div>`).join('');
+    let foot='';
+    if(state==='cur'){
+      if(r.fails>=3)foot+=`<button class="btn sm ghost" data-act="skip" style="--bc:var(--orange)">Aufgabe überspringen</button>`;
+      if(x.type==='sort')foot+=`<button class="btn sm" data-act="check" ${x.rows.every((_,k)=>r.good.includes(k)||selOf(x)[k])?'':'disabled'}>Prüfen</button>`;
+      if(x.type==='colors')foot+=`<button class="btn sm" data-act="check" ${Object.values(selOf(x)).some(Boolean)?'':'disabled'}>Prüfen</button>`;
+    }
+    const stat=r.done?`<div class="istat ok">✓ gelöst</div>`:r.skipped?`<div class="istat sk">übersprungen</div>`:'';
+    return `<li class="item ${tagCls} ${state}" data-iid="${x.iid}"><div class="ihead"><span class="inum">${esc(x.label)}</span><div class="iq"><span class="tag">${tagImg?`<img class="mini" src="${tagImg}" alt="">`:''}${tagName}</span><br>${lk(x.q)}</div></div>${x.note&&!r.done?`<div class="inote">${lk(x.note)}</div>`:''}
+      ${state==='cur'&&x.text==='r'?`<div class="ilinks"><button data-go="text">Text öffnen</button></div>`:''}<div class="ibody">${body}</div>${tips}<div class="flashi"></div>${stat}${foot?`<div class="ifoot">${foot}</div>`:''}</li>`;
+  }).join('');
+  const rp=$('#tpanel .rap');if(rp&&labelsKnown()&&!rp.dataset.known){rp.outerHTML=rapHTML();$('#tpanel .rap').dataset.known='1'}
+  setScene(cur?'s':'m');
+  drawMerk(st,!cur);
+  updateTop();
+}
+function onItemClick(st,e){
+  const li=e.target.closest('.item.cur');if(!li)return;
+  const x=itemsOf(st).find(i=>i.iid===li.dataset.iid);const r=R(x.iid);
+  const flashAfter=m=>{const f=$(`.item[data-iid="${x.iid}"] .flashi`);if(f)f.textContent=m};
+  const fail=()=>{r.fails++;r.tipN=Math.min(r.tipN+1,x.tips.length);save();drawItems(st)};
+  if(e.target.closest('[data-go]')){const tp=$('#tpanel');tp.scrollTop=0;if(window.innerWidth<=900)tp.scrollIntoView({behavior:'smooth',block:'start'});return}
+  const act=e.target.closest('[data-act]');
+  if(act){const a=act.dataset.act;
+    if(a==='skip'){r.skipped=true;save();drawItems(st);return}
+    if(a==='check'&&x.type==='sort'){const s=selOf(x);let ok=true;
+      x.rows.forEach((row,k)=>{if(r.good.includes(k))return;if(s[k]===row.a)r.good.push(k);else{ok=false;delete s[k]}});
+      if(ok){r.done=true;save();drawItems(st);return}
+      const bad=x.rows.map((_,k)=>k).filter(k=>!r.good.includes(k));fail();
+      bad.forEach(k=>{const rw=$(`.item[data-iid="${x.iid}"] .srow[data-k="${k}"]`);if(rw)rw.classList.add('bad')});
+      flashAfter('Nicht alles stimmt. Die rot markierten Aussagen müsst ihr neu zuordnen.');return}
+    if(a==='check'&&x.type==='colors'){
+      const lines=colorLines(x),words=lines.map(lastWord),sv=selOf(x),exp={};x.groups.forEach((g,gi)=>g.forEach(w=>exp[w]=gi));
+      const bad=new Set(),usedCol={};let missing=false;
+      x.groups.forEach((g,gi)=>{const idx=words.map((w,i)=>g.includes(w)?i:-1).filter(i=>i>=0);const cols=idx.map(i=>sv[i]||0).filter(Boolean);
+        if(cols.length<idx.length)missing=true;
+        if(cols.length&&cols.some(c=>c!==cols[0]))idx.forEach(i=>{if(sv[i])bad.add(i)});
+        else if(cols.length){if(Object.values(usedCol).includes(cols[0]))idx.forEach(i=>{if(sv[i])bad.add(i)});else usedCol[gi]=cols[0]}});
+      const groupCols=new Set(Object.values(usedCol));
+      // Wörter ohne Reimpartner: keine Gruppenfarbe, und gleiche Farbe nur bei gleichem Wort
+      const freeByCol={};
+      words.forEach((w,i)=>{if(exp[w]!==undefined||!sv[i])return;if(groupCols.has(sv[i]))bad.add(i);(freeByCol[sv[i]]=freeByCol[sv[i]]||[]).push(i)});
+      Object.values(freeByCol).forEach(ix=>{if(new Set(ix.map(i=>words[i].toLowerCase())).size>1)ix.forEach(i=>bad.add(i))});
+      if(!bad.size&&!missing){r.done=true;save();drawItems(st);return}
+      bad.forEach(i=>delete sv[i]);fail();
+      bad.forEach(i=>{const b=$(`.item[data-iid="${x.iid}"] .cw[data-i="${i}"]`);if(b)b.classList.add('bad')});
+      flashAfter(bad.size?'Einige Farben stimmen nicht (rot umrandet). Sprecht die Wörter laut.':'Es fehlen noch Reimwörter. Lest alle Versenden noch einmal laut.');return}
+    return}
+  const o=e.target.closest('.opt');
+  if(o&&x.type==='mc'){const k=+o.dataset.k;
+    if(isOk(x,k)){r.done=true;save();drawItems(st);return}
+    if(!r.wrong.includes(k))r.wrong.push(k);fail();flashAfter('Das stimmt nicht. Lest im Text noch einmal nach.');return}
+  const so=e.target.closest('.so');
+  if(so&&x.type==='sort'){const k=+so.closest('.srow').dataset.k;if(r.good.includes(k))return;selOf(x)[k]=so.dataset.o;
+    so.closest('.srow').classList.remove('bad');
+    so.closest('.sopts').querySelectorAll('.so').forEach(b=>b.classList.toggle('sel',b===so));
+    const ck=li.querySelector('[data-act=check]');if(ck)ck.disabled=!x.rows.every((_,i)=>r.good.includes(i)||selOf(x)[i]);return}
+  const cw=e.target.closest('.cw');
+  if(cw&&x.type==='colors'){const i=+cw.dataset.i,sv=selOf(x);sv[i]=((sv[i]||0)+1)%4;if(!sv[i])delete sv[i];
+    cw.className='cw c'+(sv[i]||0);const ck=li.querySelector('[data-act=check]');if(ck)ck.disabled=!Object.values(sv).some(Boolean)}
+}
+
+/* Stichpunkte: Merkmale von Raps */
+const bullets=t=>(t||'').split('\n').map(l=>l.replace(/^\s*[•\-*]\s*/,'').trim()).filter(l=>l.length>=2);
+function drawMerk(st,show){
+  const box=$('#merkbox'),act=$('#act');
+  if(!show){box.innerHTML='';act.innerHTML='';return}
+  if(box.dataset.st===st.id&&box.innerHTML)return;
+  box.dataset.st=st.id;
+  if(S.mhelp[st.id]===undefined){S.mhelp[st.id]=stFails(st)>=2;save()}
+  const help=S.mhelp[st.id],M=st.merk;
+  box.innerHTML=`<div class="merk"><h3>Ergebnisse in Stichpunkten: ${esc(st.title)}</h3>
+   <div class="achtung"><b>Achtung!</b> Wir schauen uns nur einen Rap von vielen an. Schreibt z. B. „Raps haben häufig …“.</div>
+   ${help?`<div class="terms">Fachwörter: ${M.terms.map(t=>`<button data-w="${esc(t)}">${esc(t)}</button>`).join('')}</div>`:''}
+   <div class="mf"><label>Merkmale von Raps</label>${help?`<div class="leit">${lk(M.leit)}</div>`:''}<textarea rows="4" placeholder="• Stichpunkt">${esc(S.merk[st.id]||'')}</textarea></div>
+   <div class="muted" style="font-size:14px;margin-top:6px">Eingabetaste = neuer Stichpunkt.</div></div>`;
+  const last=FLOW[S.idx+1]&&FLOW[S.idx+1].t==='lob';
+  act.innerHTML=`<button class="btn" id="weiter">${last?'Fertig':'Weiter'}</button>`;
+  const btn=$('#weiter'),ta=box.querySelector('textarea');
+  const upd=()=>{S.merk[st.id]=ta.value;clearTimeout(upd._t);upd._t=setTimeout(save,300);btn.disabled=bullets(ta.value).length<1};
+  ta.addEventListener('focus',()=>{if(!ta.value.trim()){ta.value='• ';ta.setSelectionRange(2,2)}});
+  ta.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.slice(0,s)+'\n• '+ta.value.slice(ta.selectionEnd);ta.setSelectionRange(s+3,s+3);upd()}});
+  ta.addEventListener('input',upd);
+  box.querySelectorAll('.terms button').forEach(b=>b.onclick=()=>{if(!ta.value.trim())ta.value='• ';const s=ta.selectionStart??ta.value.length;ta.value=ta.value.slice(0,s)+(s&&!/\s$/.test(ta.value.slice(0,s))?' ':'')+b.dataset.w+' '+ta.value.slice(s);ta.focus();upd()});
+  upd();
+  btn.onclick=()=>{S.merkDone[st.id]=true;save();next()};
+}
+
+/* ═════ Lob ═════ */
+function rLob(){
+  setScene('m');
+  $('#screen').innerHTML=`<div class="page" style="max-width:760px"><div class="titlebox">Geschafft, Team ${esc(S.team)}!</div>
+  <div class="frame" style="--fc:var(--yellow);padding:20px 22px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">${avatar(true)}
+  <p style="flex:1 1 260px;font-size:22px;font-weight:700">Super, wir schauen uns die Ergebnisse gleich zusammen an!</p></div>
+  <div class="actrow" style="justify-content:center"><button class="btn" id="go" style="--bc:var(--pink)">Zum Bericht</button></div></div>`;
+  $('#go').onclick=next;
+}
+
+/* ═════ Bericht ═════ */
+function rBericht(){
+  setScene('m');
+  const stat=x=>{const r=R(x.iid);const n=esc(x.label);if(r.skipped)return `<span class="rs skip">Aufgabe ${n} übersprungen</span>`;if(r.done)return '';return `<span class="rs no">Aufgabe ${n} offen</span>`};
+  const rows=C.stations.map(s=>{const bl=bullets(S.merk[s.id]);
+    return `<tr style="--sc:${BCOL[s.b]}"><th>${BNAME[s.b]}<div class="rstat">${itemsOf(s).map(stat).join('')}</div></th><td>${bl.length?`<ul>${bl.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<span class="empty">–</span>'}</td></tr>`}).join('');
+  const notes=['a','b','c'].filter(b=>(S.notes[b]||'').trim()).map(b=>`<p><b>${BNAME[b]}:</b> ${esc(S.notes[b]).replace(/\n/g,'<br>')}</p>`).join('');
+  $('#screen').innerHTML=`<div class="page" id="rep" style="max-width:1000px"><div class="titlebox">Untersuchungsbericht · Team ${esc(S.team)}</div>
+  <div class="frame" style="--fc:var(--pink);padding:10px 16px"><p class="thin" style="font-size:19px">${esc(FRAGE)}</p><p class="muted" style="font-size:15px">Untersucht: Pashanim, „Mittelmeer“ (Rap)</p></div>
+  <table class="rtable"><thead><tr><th class="h0">Bereich</th><th class="hs">Merkmale von Raps</th></tr></thead><tbody>${rows}</tbody></table>
+  ${notes?`<div class="frame" style="--fc:#444;padding:10px 16px"><details><summary class="kick">Eure Notizen</summary>${notes}</details></div>`:''}
+  <div class="actrow"><button class="btn sm ghost" id="rBig" style="--bc:#fff">Schrift größer</button><button class="btn sm ghost" id="rTexte" style="--bc:#fff">Text ansehen</button><button class="btn sm" id="rNeu" style="--bc:var(--pink)">Neu starten</button></div></div>`;
+  $('#rBig').onclick=()=>$('#rep').classList.toggle('rbig');$('#rTexte').onclick=openTexte;
+  $('#rNeu').onclick=()=>{if(!confirm('Wirklich neu starten? Eure Antworten und Stichpunkte werden gelöscht.'))return;clearSaved();Object.keys(tmpSel).forEach(k=>delete tmpSel[k]);S=freshState();render()};
+}
+
+/* ═════ Overlays ═════ */
+function closeOverlays(){const o=$('#ovl');if(o.classList.contains('open')){pauseVideos(o);$('#ovlBody').innerHTML=''}o.classList.remove('open');$('#ovlN').classList.remove('open');$('#ovlW').classList.remove('open')}
+function openTexte(){if(!C)return;pauseVideos();$('#ovl').classList.add('open');const b=$('#ovlBody');b.innerHTML=matHTML();bindMat(b)}
+function openWort(term){
+  $('#ovlW').classList.add('open');
+  $('#wBody').innerHTML=`<p class="muted" style="margin-bottom:8px">Alle Fachwörter von A bis Z.</p><dl class="wl">${(C.wortspeicher||[]).map(([w,t])=>`<dt data-w="${esc(w)}" class="${w===term?'hl':''}">${esc(w)}</dt><dd>${esc(t)}</dd>`).join('')}</dl>`;
+  const hl=$('#wBody dt.hl');if(hl)setTimeout(()=>hl.scrollIntoView({block:'center'}),30);
+}
+document.addEventListener('click',e=>{const w=e.target.closest('.wlink');if(w&&C){e.stopPropagation();openWort(w.dataset.w)}},true);
+function openNotes(){
+  $('#ovlN').classList.add('open');
+  $('#nBody').innerHTML=['a','b','c'].map(b=>`<label>${BNAME[b]}</label><textarea data-b="${b}" rows="3">${esc(S.notes[b]||'')}</textarea>`).join('');
+  $$('#nBody textarea').forEach(t=>t.addEventListener('input',()=>{S.notes[t.dataset.b]=t.value;clearTimeout(openNotes._t);openNotes._t=setTimeout(save,300)}));
+}
+
+/* ═════ Start ═════ */
+function start(){
+  buildFlow();const saved=loadSaved();
+  if(saved&&saved.v===1&&saved.team&&saved.idx>0&&saved.idx<FLOW.length-1){
+    S=freshState();setScene('m');
+    $('#screen').innerHTML=`<div class="page" style="max-width:640px"><div class="titlebox">Willkommen zurück!</div><div class="pinkbox"><p>Euer Team „${esc(saved.team)}“ hat schon angefangen.</p>
+    <div class="actrow" style="justify-content:center"><button class="btn" id="cont" style="--bc:var(--pink)">Weitermachen</button><button class="btn ghost" id="fresh">Neu anfangen</button></div></div></div>`;
+    $('#cont').onclick=()=>{S=saved;render()};$('#fresh').onclick=()=>{clearSaved();S=freshState();render()};
+  }else{S=freshState();render()}
+  if(/[?&]dev\b/.test(location.search)){const d=document.createElement('div');d.className='dev';d.innerHTML='<select id="devsel">'+FLOW.map((f,i)=>`<option value="${i}">${i}: ${f.t}${f.id?' '+f.id:''}</option>`).join('')+'</select>';document.body.appendChild(d);
+    $('#devsel').onchange=e=>{if(!S.team)S.team='Test';if(!S.deadline)S.deadline=Date.now()+TOTAL_SEC*1000;go(+e.target.value)}}
+}
+function init(){
+  $('#btnTexte').onclick=openTexte;
+  $('#btnNotes').onclick=openNotes;$('#btnWort').onclick=()=>{if(C)openWort()};$('#wClose').onclick=()=>$('#ovlW').classList.remove('open');$('#ovlClose').onclick=closeOverlays;$('#nClose').onclick=closeOverlays;
+  setInterval(()=>{tickTimer();tickRead()},1000);
+  if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if(!PAYLOAD){$('#screen').innerHTML='<div class="page"><div class="titlebox">Fehler</div><p>Diese Datei wurde noch nicht mit build.py erzeugt.</p></div>';return}
+  const m=location.hash.match(/k=([^&]+)/);
+  if(m){const pw=decodeURIComponent(m[1]);history.replaceState(null,'',location.pathname+location.search);unlock(pw).then(c=>{C=c;start()}).catch(()=>showGate('Der Link ist ungültig. Gebt das Passwort ein.'))}
+  else showGate();
+}
+init();
+})();
+</script>
+</body>
+</html>
